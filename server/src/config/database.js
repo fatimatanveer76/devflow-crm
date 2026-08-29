@@ -1,6 +1,14 @@
 import { Sequelize } from 'sequelize';
 import { config } from './env.js';
 
+const dialectOptions = {};
+if (config.db.ssl) {
+  dialectOptions.ssl = {
+    require: true,
+    rejectUnauthorized: false,
+  };
+}
+
 export const sequelize = new Sequelize(
   config.db.name,
   config.db.user,
@@ -9,22 +17,24 @@ export const sequelize = new Sequelize(
     host: config.db.host,
     port: config.db.port,
     dialect: config.db.dialect,
-    logging: config.db.logging ? console.log : false,
+    logging: config.db.logging ? (msg) => console.log(`[Sequelize] ${msg}`) : false,
     pool: {
-      max: 10,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
+      max: config.db.pool.max,
+      min: config.db.pool.min,
+      acquire: config.db.pool.acquire,
+      idle: config.db.pool.idle,
     },
+    dialectOptions,
     define: {
       timestamps: true,
       underscored: true,
+      freezeTableName: false,
     },
   }
 );
 
 /**
- * Tests database connectivity
+ * Tests database connectivity using sequelize.authenticate()
  * @returns {Promise<{connected: boolean, error: string|null}>}
  */
 export const testDbConnection = async () => {
@@ -32,6 +42,14 @@ export const testDbConnection = async () => {
     await sequelize.authenticate();
     return { connected: true, error: null };
   } catch (error) {
-    return { connected: false, error: error.message };
+    // Sanitize error message to prevent leaking credentials or connection strings
+    const sanitizedError = error.name || 'Database connection error';
+    return {
+      connected: false,
+      error: sanitizedError,
+      details: config.nodeEnv === 'development' ? error.message : undefined,
+    };
   }
 };
+
+export { Sequelize };

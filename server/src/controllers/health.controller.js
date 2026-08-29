@@ -2,23 +2,25 @@ import { config } from '../config/env.js';
 import { testDbConnection } from '../config/database.js';
 
 /**
- * Controller to handle system health check
+ * Controller to handle system and database health check
+ * @route GET /api/v1/health
  */
 export const getHealth = async (req, res, next) => {
   try {
     const dbStatus = await testDbConnection();
 
     const healthData = {
-      server: 'healthy',
-      timestamp: new Date().toISOString(),
-      uptime: `${Math.floor(process.uptime())}s`,
-      environment: config.nodeEnv,
+      server: {
+        status: 'healthy',
+        uptime: `${Math.floor(process.uptime())}s`,
+        environment: config.nodeEnv,
+        timestamp: new Date().toISOString(),
+      },
       database: {
         status: dbStatus.connected ? 'connected' : 'disconnected',
         dialect: config.db.dialect,
-        host: config.db.host,
-        port: config.db.port,
         database: config.db.name,
+        ...(dbStatus.connected ? {} : { message: 'Database currently unreachable' }),
       },
     };
 
@@ -27,6 +29,20 @@ export const getHealth = async (req, res, next) => {
       data: healthData,
     });
   } catch (error) {
-    next(error);
+    // Graceful fallback to prevent server crashing on health check failure
+    return res.status(200).json({
+      success: true,
+      data: {
+        server: {
+          status: 'healthy',
+          environment: config.nodeEnv,
+          timestamp: new Date().toISOString(),
+        },
+        database: {
+          status: 'disconnected',
+          message: 'Database check failed',
+        },
+      },
+    });
   }
 };
