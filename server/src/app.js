@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { config } from './config/env.js';
 import v1Routes from './routes/index.js';
 import { notFound } from './middleware/notFound.js';
@@ -16,7 +17,7 @@ app.use(
   })
 );
 
-// CORS configuration
+// CORS configuration with credentials support for HTTP-only cookies
 app.use(
   cors({
     origin: [config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'],
@@ -28,6 +29,9 @@ app.use(
 if (config.nodeEnv !== 'test') {
   app.use(morgan('dev'));
 }
+
+// Cookie parser for HTTP-only refresh tokens
+app.use(cookieParser(config.cookie.secret));
 
 // Body parsers
 app.use(express.json());
