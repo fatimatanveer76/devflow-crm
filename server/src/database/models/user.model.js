@@ -1,6 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import { uuidPrimaryKey, createModelOptions } from './baseModel.js';
+import { ALL_ROLES, ROLES } from '../../config/roles.js';
 
 export class User extends Model {
   /**
@@ -65,11 +66,11 @@ export const initUser = (sequelize) => {
       role: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        defaultValue: 'user',
+        defaultValue: ROLES.EMPLOYEE,
         validate: {
           isIn: {
-            args: [['admin', 'manager', 'developer', 'client', 'user']],
-            msg: 'Invalid user role',
+            args: [ALL_ROLES],
+            msg: `Role must be one of: ${ALL_ROLES.join(', ')}`,
           },
         },
       },
