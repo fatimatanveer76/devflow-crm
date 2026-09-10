@@ -8,6 +8,7 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import DashboardPage from '../pages/DashboardPage';
 import UsersPage from '../pages/UsersPage';
+import LeadsPage from '../pages/LeadsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 export const AppRoutes = () => {
@@ -22,6 +23,7 @@ export const AppRoutes = () => {
         {/* Protected routes — require authentication */}
         <Route element={<ProtectedRoute />}>
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="leads" element={<LeadsPage />} />
 
           {/* User management — admin and manager can view; admin can mutate */}
           <Route

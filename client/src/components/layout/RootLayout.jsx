@@ -103,6 +103,17 @@ export const RootLayout = () => {
             </NavLink>
           )}
 
+          {/* CRM Leads — all authenticated users */}
+          {isAuthenticated && (
+            <NavLink
+              to="/leads"
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            >
+              <span className="material-symbols-outlined">leaderboard</span>
+              <span>Leads</span>
+            </NavLink>
+          )}
+
           {/* User management — admin and manager only */}
           {isAuthenticated && (currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
             <NavLink
@@ -134,6 +145,7 @@ export const RootLayout = () => {
               'Phase 2: Database',
               'Phase 3: Authentication',
               'Phase 4: RBAC',
+              'Phase 5: Leads & CRM',
             ].map((label) => (
               <div
                 key={label}
@@ -165,7 +177,7 @@ export const RootLayout = () => {
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lock</span>
-              <span>Phases 5–14: Standby</span>
+              <span>Phases 6–14: Standby</span>
             </div>
           </div>
         </nav>
@@ -182,7 +194,7 @@ export const RootLayout = () => {
             justifyContent: 'space-between',
           }}
         >
-          <span>v1.0.0 (Phase 4)</span>
+          <span>v1.0.0 (Phase 5)</span>
           <span className="badge badge-info">Dev Mode</span>
         </div>
       </aside>

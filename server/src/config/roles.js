@@ -51,29 +51,56 @@ export const isValidRole = (role) => ALL_ROLES.includes(role);
 
 /**
  * Permissions matrix per role.
- * Defines what each role is explicitly allowed to do in Phase 4.
+ * Defines what each role is explicitly allowed to do across DevFlow CRM modules.
  */
 export const PERMISSIONS = Object.freeze({
   [ROLES.ADMIN]: Object.freeze({
+    // User management
     canListUsers: true,
     canViewUser: true,
     canChangeRole: true,
     canChangeStatus: true,
     canDeleteUser: true,
+    // Lead management
+    canListLeads: true,
+    canViewLead: true,
+    canCreateLead: true,
+    canUpdateLead: true,
+    canDeleteLead: true,
+    canAssignLead: true,
+    canUpdateLeadStatus: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
+    // User management
     canListUsers: true,
     canViewUser: true,
     canChangeRole: false,
     canChangeStatus: false,
     canDeleteUser: false,
+    // Lead management
+    canListLeads: true,
+    canViewLead: true,
+    canCreateLead: true,
+    canUpdateLead: true,
+    canDeleteLead: false, // only admin can delete leads
+    canAssignLead: true,
+    canUpdateLeadStatus: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
+    // User management
     canListUsers: false,
     canViewUser: false,
     canChangeRole: false,
     canChangeStatus: false,
     canDeleteUser: false,
+    // Lead management (scoped to assigned leads at service level)
+    canListLeads: true,
+    canViewLead: true,
+    canCreateLead: true,
+    canUpdateLead: true,
+    canDeleteLead: false,
+    canAssignLead: false,
+    canUpdateLeadStatus: true,
   }),
 });
 
@@ -89,4 +116,11 @@ export const getPermissions = (role) => PERMISSIONS[role] ?? {
   canChangeRole: false,
   canChangeStatus: false,
   canDeleteUser: false,
+  canListLeads: false,
+  canViewLead: false,
+  canCreateLead: false,
+  canUpdateLead: false,
+  canDeleteLead: false,
+  canAssignLead: false,
+  canUpdateLeadStatus: false,
 };

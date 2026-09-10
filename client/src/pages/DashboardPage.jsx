@@ -194,10 +194,59 @@ const DashboardPage = () => {
           </Link>
         </RoleGuard>
 
+        {/* CRM Leads — active for all authenticated users */}
+        <Link
+          to="/leads"
+          style={{ textDecoration: 'none' }}
+          id="quick-action-leads"
+        >
+          <div
+            className="glass-card"
+            style={{
+              padding: '20px',
+              cursor: 'pointer',
+              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                color: 'var(--status-success)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              <span className="material-symbols-outlined">leaderboard</span>
+            </div>
+            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
+              Lead Management
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+              Track sales pipeline, qualify, and manage leads
+            </div>
+            <span className="badge badge-success">
+              Phase 5 Live
+            </span>
+          </div>
+        </Link>
+
         {/* Coming Soon placeholders */}
         {[
-          { icon: 'contacts', label: 'Leads & Deals', desc: 'CRM pipeline management', phase: 5 },
           { icon: 'task_alt', label: 'Projects & Tasks', desc: 'Milestones and task tracking', phase: 6 },
+          { icon: 'lock_person', label: 'Requirement Vault', desc: 'Client portal & secret vault', phase: 7 },
         ].map((item) => (
           <div
             key={item.label}
