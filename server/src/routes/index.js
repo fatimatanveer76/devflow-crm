@@ -5,6 +5,9 @@ import userRoutes from './user.routes.js';
 import leadRoutes from './lead.routes.js';
 import dealRoutes from './deal.routes.js';
 import projectRoutes from './project.routes.js';
+import taskRoutes from './task.routes.js';
+import noteRoutes from './note.routes.js';
+import activityRoutes from './activity.routes.js';
 
 const router = Router();
 
@@ -25,5 +28,14 @@ router.use('/deals', dealRoutes);
 
 // /api/v1/projects — requires authentication + RBAC permission
 router.use('/projects', projectRoutes);
+
+// /api/v1/tasks — requires authentication + RBAC permission
+router.use('/tasks', taskRoutes);
+
+// /api/v1/notes — requires authentication + RBAC permission
+router.use('/notes', noteRoutes);
+
+// /api/v1/activities — requires authentication + RBAC permission
+router.use('/activities', activityRoutes);
 
 export default router;

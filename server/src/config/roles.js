@@ -86,6 +86,22 @@ export const PERMISSIONS = Object.freeze({
     canDeleteProject: true,
     canAssignProject: true,
     canUpdateProjectStatus: true,
+    // Task management
+    canListTasks: true,
+    canViewTask: true,
+    canCreateTask: true,
+    canUpdateTask: true,
+    canDeleteTask: true,
+    canAssignTask: true,
+    canUpdateTaskStatus: true,
+    // Note management
+    canListNotes: true,
+    canViewNote: true,
+    canCreateNote: true,
+    canUpdateNote: true,
+    canDeleteNote: true,
+    // Activity management
+    canListActivities: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
     // User management
@@ -119,6 +135,22 @@ export const PERMISSIONS = Object.freeze({
     canDeleteProject: false, // only admin can delete projects
     canAssignProject: true,
     canUpdateProjectStatus: true,
+    // Task management
+    canListTasks: true,
+    canViewTask: true,
+    canCreateTask: true,
+    canUpdateTask: true,
+    canDeleteTask: false, // only admin can delete tasks
+    canAssignTask: true,
+    canUpdateTaskStatus: true,
+    // Note management
+    canListNotes: true,
+    canViewNote: true,
+    canCreateNote: true,
+    canUpdateNote: true,
+    canDeleteNote: true,
+    // Activity management
+    canListActivities: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
     // User management
@@ -152,6 +184,22 @@ export const PERMISSIONS = Object.freeze({
     canDeleteProject: false,
     canAssignProject: false,
     canUpdateProjectStatus: true,
+    // Task management (scoped to assigned tasks at service level)
+    canListTasks: true,
+    canViewTask: true,
+    canCreateTask: true,
+    canUpdateTask: true,
+    canDeleteTask: false,
+    canAssignTask: false,
+    canUpdateTaskStatus: true,
+    // Note management
+    canListNotes: true,
+    canViewNote: true,
+    canCreateNote: true,
+    canUpdateNote: true,
+    canDeleteNote: false,
+    // Activity management
+    canListActivities: true,
   }),
 });
 
@@ -189,4 +237,17 @@ export const getPermissions = (role) => PERMISSIONS[role] ?? {
   canDeleteProject: false,
   canAssignProject: false,
   canUpdateProjectStatus: false,
+  canListTasks: false,
+  canViewTask: false,
+  canCreateTask: false,
+  canUpdateTask: false,
+  canDeleteTask: false,
+  canAssignTask: false,
+  canUpdateTaskStatus: false,
+  canListNotes: false,
+  canViewNote: false,
+  canCreateNote: false,
+  canUpdateNote: false,
+  canDeleteNote: false,
+  canListActivities: false,
 };

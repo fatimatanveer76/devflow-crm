@@ -340,6 +340,55 @@ const DashboardPage = () => {
             </span>
           </div>
         </Link>
+
+        {/* Tasks & Activities — active for all authenticated users */}
+        <Link
+          to="/tasks"
+          style={{ textDecoration: 'none' }}
+          id="quick-action-tasks"
+        >
+          <div
+            className="glass-card"
+            style={{
+              padding: '20px',
+              cursor: 'pointer',
+              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                color: '#f59e0b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              <span className="material-symbols-outlined">checklist</span>
+            </div>
+            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
+              Tasks &amp; Activities
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+              Kanban task boards, deliverables, notes, and activity timeline
+            </div>
+            <span className="badge badge-success">
+              Phase 8 Live
+            </span>
+          </div>
+        </Link>
       </div>
     </div>
   );
