@@ -69,6 +69,15 @@ export const PERMISSIONS = Object.freeze({
     canDeleteLead: true,
     canAssignLead: true,
     canUpdateLeadStatus: true,
+    // Deal management
+    canListDeals: true,
+    canViewDeal: true,
+    canCreateDeal: true,
+    canUpdateDeal: true,
+    canDeleteDeal: true,
+    canAssignDeal: true,
+    canUpdateDealStage: true,
+    canUpdateDealStatus: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
     // User management
@@ -85,6 +94,15 @@ export const PERMISSIONS = Object.freeze({
     canDeleteLead: false, // only admin can delete leads
     canAssignLead: true,
     canUpdateLeadStatus: true,
+    // Deal management
+    canListDeals: true,
+    canViewDeal: true,
+    canCreateDeal: true,
+    canUpdateDeal: true,
+    canDeleteDeal: false, // only admin can delete deals
+    canAssignDeal: true,
+    canUpdateDealStage: true,
+    canUpdateDealStatus: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
     // User management
@@ -101,6 +119,15 @@ export const PERMISSIONS = Object.freeze({
     canDeleteLead: false,
     canAssignLead: false,
     canUpdateLeadStatus: true,
+    // Deal management (scoped to assigned deals at service level)
+    canListDeals: true,
+    canViewDeal: true,
+    canCreateDeal: true,
+    canUpdateDeal: true,
+    canDeleteDeal: false,
+    canAssignDeal: false,
+    canUpdateDealStage: true,
+    canUpdateDealStatus: true,
   }),
 });
 
@@ -123,4 +150,12 @@ export const getPermissions = (role) => PERMISSIONS[role] ?? {
   canDeleteLead: false,
   canAssignLead: false,
   canUpdateLeadStatus: false,
+  canListDeals: false,
+  canViewDeal: false,
+  canCreateDeal: false,
+  canUpdateDeal: false,
+  canDeleteDeal: false,
+  canAssignDeal: false,
+  canUpdateDealStage: false,
+  canUpdateDealStatus: false,
 };

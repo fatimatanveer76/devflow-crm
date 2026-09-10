@@ -243,10 +243,59 @@ const DashboardPage = () => {
           </div>
         </Link>
 
+        {/* CRM Deals & Sales Pipeline — active for all authenticated users */}
+        <Link
+          to="/deals"
+          style={{ textDecoration: 'none' }}
+          id="quick-action-deals"
+        >
+          <div
+            className="glass-card"
+            style={{
+              padding: '20px',
+              cursor: 'pointer',
+              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '';
+            }}
+          >
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(99, 102, 241, 0.12)',
+                color: 'var(--accent-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              <span className="material-symbols-outlined">monetization_on</span>
+            </div>
+            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
+              Deals &amp; Pipeline
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+              Sales pipeline stages, deal probabilities, and revenue forecasts
+            </div>
+            <span className="badge badge-success">
+              Phase 6 Live
+            </span>
+          </div>
+        </Link>
+
         {/* Coming Soon placeholders */}
         {[
-          { icon: 'task_alt', label: 'Projects & Tasks', desc: 'Milestones and task tracking', phase: 6 },
-          { icon: 'lock_person', label: 'Requirement Vault', desc: 'Client portal & secret vault', phase: 7 },
+          { icon: 'task_alt', label: 'Projects & Milestones', desc: 'Milestones and task tracking', phase: 7 },
+          { icon: 'lock_person', label: 'Requirement Vault', desc: 'Client portal & secret vault', phase: 8 },
         ].map((item) => (
           <div
             key={item.label}

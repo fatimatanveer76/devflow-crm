@@ -3,6 +3,7 @@ import healthRoutes from './health.routes.js';
 import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import leadRoutes from './lead.routes.js';
+import dealRoutes from './deal.routes.js';
 
 const router = Router();
 
@@ -17,5 +18,8 @@ router.use('/users', userRoutes);
 
 // /api/v1/leads — requires authentication + RBAC permission
 router.use('/leads', leadRoutes);
+
+// /api/v1/deals — requires authentication + RBAC permission
+router.use('/deals', dealRoutes);
 
 export default router;
