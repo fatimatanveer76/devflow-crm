@@ -1,5 +1,7 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { config } from '../config/env.js';
+import { ROLES } from '../config/roles.js';
 import { User, RefreshToken } from '../database/models/index.js';
 import {
   signAccessToken,
@@ -12,7 +14,7 @@ export class AuthService {
   /**
    * Registers a new user account
    */
-  static async register({ name, email, password, role }) {
+  static async register({ name, email, password }) {
     const normalizedEmail = email.toLowerCase().trim();
 
     // Check for existing user
@@ -31,12 +33,12 @@ export class AuthService {
     // Hash password securely
     const password_hash = await bcrypt.hash(password, config.bcrypt.saltRounds);
 
-    // Create user record
+    // Create user record — role is always EMPLOYEE; callers cannot self-assign roles
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
       password_hash,
-      role: role || 'user',
+      role: ROLES.EMPLOYEE,
       is_active: true,
       refresh_token_version: 0,
     });

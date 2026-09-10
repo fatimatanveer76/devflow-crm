@@ -1,13 +1,19 @@
+import { ALL_ROLES } from '../config/roles.js';
+
 /**
  * Regular expression for standard email validation
  */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Validates registration request body
+ * Validates registration request body.
+ * Note: The `role` field is intentionally ignored at the service layer — callers
+ * cannot self-assign a role. The field is validated here only to provide a clear
+ * error if an explicitly invalid value is sent, but the service will always
+ * default new users to EMPLOYEE regardless.
  */
 export const validateRegister = (req, res, next) => {
-  const { name, email, password, role } = req.body || {};
+  const { name, email, password } = req.body || {};
   const errors = [];
 
   // Name validation
@@ -29,11 +35,6 @@ export const validateRegister = (req, res, next) => {
     errors.push({ field: 'password', message: 'Password must be at least 8 characters long.' });
   } else if (password.length > 128) {
     errors.push({ field: 'password', message: 'Password cannot exceed 128 characters.' });
-  }
-
-  // Optional role validation (if passed)
-  if (role && !['admin', 'manager', 'developer', 'client', 'user'].includes(role)) {
-    errors.push({ field: 'role', message: 'Invalid role specified.' });
   }
 
   if (errors.length > 0) {

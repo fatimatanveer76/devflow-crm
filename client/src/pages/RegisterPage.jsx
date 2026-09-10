@@ -21,7 +21,7 @@ export const RegisterPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
     return () => {
       dispatch(clearAuthError());

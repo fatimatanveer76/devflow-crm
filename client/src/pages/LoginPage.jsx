@@ -18,7 +18,7 @@ export const LoginPage = () => {
   const location = useLocation();
   const { isAuthenticated, isLoading, error } = useSelector(selectAuth);
 
-  const redirectPath = location.state?.from?.pathname || '/';
+  const redirectPath = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
     if (isAuthenticated) {
