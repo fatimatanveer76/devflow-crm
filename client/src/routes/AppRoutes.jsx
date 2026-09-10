@@ -10,6 +10,7 @@ import DashboardPage from '../pages/DashboardPage';
 import UsersPage from '../pages/UsersPage';
 import LeadsPage from '../pages/LeadsPage';
 import DealsPage from '../pages/DealsPage';
+import ProjectsPage from '../pages/ProjectsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 export const AppRoutes = () => {
@@ -26,6 +27,7 @@ export const AppRoutes = () => {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="leads" element={<LeadsPage />} />
           <Route path="deals" element={<DealsPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
 
           {/* User management — admin and manager can view; admin can mutate */}
           <Route

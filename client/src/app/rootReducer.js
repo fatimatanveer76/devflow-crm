@@ -4,6 +4,7 @@ import authReducer from '../features/auth/authSlice';
 import usersReducer from '../features/users/usersSlice';
 import leadsReducer from '../features/leads/leadsSlice';
 import dealsReducer from '../features/deals/dealsSlice';
+import projectsReducer from '../features/projects/projectsSlice';
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   users: usersReducer,
   leads: leadsReducer,
   deals: dealsReducer,
+  projects: projectsReducer,
 });
 
 export default rootReducer;

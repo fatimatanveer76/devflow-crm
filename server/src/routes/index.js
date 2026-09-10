@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import leadRoutes from './lead.routes.js';
 import dealRoutes from './deal.routes.js';
+import projectRoutes from './project.routes.js';
 
 const router = Router();
 
@@ -21,5 +22,8 @@ router.use('/leads', leadRoutes);
 
 // /api/v1/deals — requires authentication + RBAC permission
 router.use('/deals', dealRoutes);
+
+// /api/v1/projects — requires authentication + RBAC permission
+router.use('/projects', projectRoutes);
 
 export default router;

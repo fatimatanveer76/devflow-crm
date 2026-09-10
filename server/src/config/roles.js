@@ -78,6 +78,14 @@ export const PERMISSIONS = Object.freeze({
     canAssignDeal: true,
     canUpdateDealStage: true,
     canUpdateDealStatus: true,
+    // Project management
+    canListProjects: true,
+    canViewProject: true,
+    canCreateProject: true,
+    canUpdateProject: true,
+    canDeleteProject: true,
+    canAssignProject: true,
+    canUpdateProjectStatus: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
     // User management
@@ -103,6 +111,14 @@ export const PERMISSIONS = Object.freeze({
     canAssignDeal: true,
     canUpdateDealStage: true,
     canUpdateDealStatus: true,
+    // Project management
+    canListProjects: true,
+    canViewProject: true,
+    canCreateProject: true,
+    canUpdateProject: true,
+    canDeleteProject: false, // only admin can delete projects
+    canAssignProject: true,
+    canUpdateProjectStatus: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
     // User management
@@ -128,6 +144,14 @@ export const PERMISSIONS = Object.freeze({
     canAssignDeal: false,
     canUpdateDealStage: true,
     canUpdateDealStatus: true,
+    // Project management (scoped to assigned projects at service level)
+    canListProjects: true,
+    canViewProject: true,
+    canCreateProject: true,
+    canUpdateProject: true,
+    canDeleteProject: false,
+    canAssignProject: false,
+    canUpdateProjectStatus: true,
   }),
 });
 
@@ -158,4 +182,11 @@ export const getPermissions = (role) => PERMISSIONS[role] ?? {
   canAssignDeal: false,
   canUpdateDealStage: false,
   canUpdateDealStatus: false,
+  canListProjects: false,
+  canViewProject: false,
+  canCreateProject: false,
+  canUpdateProject: false,
+  canDeleteProject: false,
+  canAssignProject: false,
+  canUpdateProjectStatus: false,
 };

@@ -292,42 +292,54 @@ const DashboardPage = () => {
           </div>
         </Link>
 
-        {/* Coming Soon placeholders */}
-        {[
-          { icon: 'task_alt', label: 'Projects & Milestones', desc: 'Milestones and task tracking', phase: 7 },
-          { icon: 'lock_person', label: 'Requirement Vault', desc: 'Client portal & secret vault', phase: 8 },
-        ].map((item) => (
+        {/* Projects & Project Management — active for all authenticated users */}
+        <Link
+          to="/projects"
+          style={{ textDecoration: 'none' }}
+          id="quick-action-projects"
+        >
           <div
-            key={item.label}
             className="glass-card"
-            style={{ padding: '20px', opacity: 0.55 }}
+            style={{
+              padding: '20px',
+              cursor: 'pointer',
+              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '';
+            }}
           >
             <div
               style={{
                 width: '40px',
                 height: '40px',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--bg-tertiary)',
-                color: 'var(--text-muted)',
+                backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                color: '#06b6d4',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginBottom: '12px',
               }}
             >
-              <span className="material-symbols-outlined">{item.icon}</span>
+              <span className="material-symbols-outlined">task_alt</span>
             </div>
             <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-              {item.label}
+              Projects &amp; Management
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              {item.desc}
+              Project portfolio, status tracking, and budget management
             </div>
-            <span className="badge" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-muted)' }}>
-              Phase {item.phase}
+            <span className="badge badge-success">
+              Phase 7 Live
             </span>
           </div>
-        ))}
+        </Link>
       </div>
     </div>
   );
