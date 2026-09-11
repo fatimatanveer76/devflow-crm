@@ -55,6 +55,8 @@ export const isValidRole = (role) => ALL_ROLES.includes(role);
  */
 export const PERMISSIONS = Object.freeze({
   [ROLES.ADMIN]: Object.freeze({
+    // Dashboard & Analytics
+    canViewDashboard: true,
     // User management
     canListUsers: true,
     canViewUser: true,
@@ -104,6 +106,8 @@ export const PERMISSIONS = Object.freeze({
     canListActivities: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
+    // Dashboard & Analytics
+    canViewDashboard: true,
     // User management
     canListUsers: true,
     canViewUser: true,
@@ -153,6 +157,8 @@ export const PERMISSIONS = Object.freeze({
     canListActivities: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
+    // Dashboard & Analytics
+    canViewDashboard: true,
     // User management
     canListUsers: false,
     canViewUser: false,
@@ -210,6 +216,7 @@ export const PERMISSIONS = Object.freeze({
  * @returns {Object}
  */
 export const getPermissions = (role) => PERMISSIONS[role] ?? {
+  canViewDashboard: false,
   canListUsers: false,
   canViewUser: false,
   canChangeRole: false,

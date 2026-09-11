@@ -1,15 +1,42 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { selectCurrentUser } from '../features/auth/authSlice';
+import {
+  fetchDashboardSummary,
+  setDateRange,
+  selectDashboardData,
+  selectDashboardLoading,
+  selectDashboardError,
+  selectDashboardDateRange,
+  selectDashboardLastUpdated,
+} from '../features/dashboard/dashboardSlice';
+import { MetricCard } from '../components/dashboard/MetricCard';
+import { LeadAnalytics } from '../components/dashboard/LeadAnalytics';
+import { DealAnalytics } from '../components/dashboard/DealAnalytics';
+import { ProjectAnalytics } from '../components/dashboard/ProjectAnalytics';
+import { TaskAnalytics } from '../components/dashboard/TaskAnalytics';
+import { DateRangePicker } from '../components/dashboard/DateRangePicker';
+import { ActivityTimeline } from '../components/activities/ActivityTimeline';
 import RoleGuard from '../components/auth/RoleGuard';
 
-/**
- * DashboardPage — authenticated landing page.
- * Shows a personalized welcome and role-aware navigation cards for Phase 4+.
- */
-const DashboardPage = () => {
+const formatMoney = (amount) => {
+  const n = parseFloat(amount) || 0;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n);
+};
+
+export const DashboardPage = () => {
+  const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
+  const data = useSelector(selectDashboardData);
+  const isLoading = useSelector(selectDashboardLoading);
+  const error = useSelector(selectDashboardError);
+  const { rangeKey, startDate, endDate } = useSelector(selectDashboardDateRange);
+  const lastUpdated = useSelector(selectDashboardLastUpdated);
 
   const roleLabel = {
     admin: 'Administrator',
@@ -23,373 +50,345 @@ const DashboardPage = () => {
     employee: 'badge-success',
   }[user?.role] || 'badge-info';
 
+  const loadMetrics = useCallback(() => {
+    const params = {};
+    if (startDate) params.start_date = startDate;
+    if (endDate) params.end_date = endDate;
+    dispatch(fetchDashboardSummary(params));
+  }, [dispatch, startDate, endDate]);
+
+  useEffect(() => {
+    loadMetrics();
+  }, [loadMetrics]);
+
+  const handleRangeChange = (newKey, newStart, newEnd) => {
+    dispatch(setDateRange({ rangeKey: newKey, startDate: newStart, endDate: newEnd }));
+  };
+
+  const overview = data?.overview || {};
+  const leads = data?.leads || {};
+  const deals = data?.deals || {};
+  const projects = data?.projects || {};
+  const tasks = data?.tasks || {};
+
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-      {/* Welcome Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span className={`badge ${roleBadgeClass}`}>
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-              {user?.role === 'admin' ? 'admin_panel_settings' : user?.role === 'manager' ? 'manage_accounts' : 'person'}
+    <div style={{ maxWidth: '1240px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+      {/* Header & Date Filter Toolbar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span className={`badge ${roleBadgeClass}`}>
+              <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>
+                {user?.role === 'admin' ? 'admin_panel_settings' : user?.role === 'manager' ? 'manage_accounts' : 'person'}
+              </span>
+              <span>{roleLabel}</span>
             </span>
-            <span>{roleLabel}</span>
-          </span>
+            <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span className="status-dot pulse" />
+              Phase 9 Live
+            </span>
+            {lastUpdated && (
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
+                Updated {new Date(lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+          <h1 style={{ fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+            Welcome back, {user?.name?.split(' ')[0] || 'User'}
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '2px' }}>
+            Enterprise CRM &amp; analytics performance intelligence dashboard.
+          </p>
         </div>
-        <h1 style={{ fontSize: '2rem', marginBottom: '8px', letterSpacing: '-0.03em' }}>
-          Welcome back, {user?.name?.split(' ')[0] || 'User'}
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          You are signed in as <strong>{user?.email}</strong> with{' '}
-          <strong>{roleLabel}</strong> privileges.
-        </p>
+
+        <DateRangePicker
+          activeKey={rangeKey}
+          customStart={startDate}
+          customEnd={endDate}
+          onRangeChange={handleRangeChange}
+          onRefresh={loadMetrics}
+          isLoading={isLoading}
+        />
       </div>
 
-      {/* Phase 4 RBAC Status Card */}
-      <div className="glass-card" style={{ marginBottom: '28px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--status-success-bg)',
-              color: 'var(--status-success)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span className="material-symbols-outlined">verified_user</span>
-          </div>
-          <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: '600' }}>
-              Phase 4 — RBAC &amp; Authorization Active
-            </h2>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Role-based access control is enforced on all protected API endpoints
+      {/* Error state with retry */}
+      {error && (
+        <div
+          className="glass-card"
+          style={{
+            padding: '20px',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--status-danger)',
+            background: 'var(--status-danger-bg)',
+            color: 'var(--status-danger)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
+              error
+            </span>
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>Failed to retrieve dashboard analytics</div>
+              <div style={{ fontSize: '0.82rem', opacity: 0.9 }}>{error}</div>
             </div>
           </div>
-          <span className="badge badge-success" style={{ marginLeft: 'auto' }}>
-            <span className="status-dot pulse" />
-            Live
-          </span>
+          <button onClick={loadMetrics} className="btn btn-secondary" style={{ padding: '6px 14px', fontSize: '0.82rem' }}>
+            Retry Request
+          </button>
         </div>
+      )}
 
-        <div className="grid-3">
-          {[
-            {
-              icon: 'lock',
-              label: 'Your Role',
-              value: roleLabel,
-              sub: 'Current access level',
-              color: 'var(--accent-primary)',
-              bg: 'rgba(99,102,241,0.10)',
-            },
-            {
-              icon: 'key',
-              label: 'Session',
-              value: 'Active',
-              sub: 'JWT + HTTP-only cookie',
-              color: 'var(--status-success)',
-              bg: 'var(--status-success-bg)',
-            },
-            {
-              icon: 'shield',
-              label: 'Permissions',
-              value: user?.role === 'admin' ? 'Full' : user?.role === 'manager' ? 'Elevated' : 'Standard',
-              sub: 'Enforced server-side',
-              color: 'var(--accent-secondary)',
-              bg: 'rgba(139,92,246,0.10)',
-            },
-          ].map((item) => (
-            <div
-              key={item.label}
-              style={{
-                padding: '16px',
-                background: 'var(--bg-tertiary)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
-            >
+      {/* Loading state indicator */}
+      {isLoading && !data && (
+        <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-secondary)' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '42px', animation: 'spin 1s linear infinite' }}>
+            sync
+          </span>
+          <div style={{ marginTop: '14px', fontWeight: '600' }}>Aggregating real-time database metrics...</div>
+        </div>
+      )}
+
+      {/* Main Analytics Dashboard */}
+      {data && (
+        <>
+          {/* Executive KPI Metric Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+            <MetricCard
+              icon="leaderboard"
+              label="Total Leads"
+              value={overview.totalLeads ?? 0}
+              secondary={`${leads.byStatus?.qualified || 0} qualified leads`}
+              color="#06b6d4"
+              bg="rgba(6, 182, 212, 0.12)"
+              badge="CRM"
+              badgeType="info"
+            />
+
+            <MetricCard
+              icon="monetization_on"
+              label="Pipeline Deals"
+              value={overview.totalDeals ?? 0}
+              secondary={`${deals.byStatus?.won || 0} won deals`}
+              color="#6366f1"
+              bg="rgba(99, 102, 241, 0.12)"
+              badge="Sales"
+              badgeType="primary"
+            />
+
+            <MetricCard
+              icon="account_balance_wallet"
+              label="Total Deal Value"
+              value={formatMoney(deals.totalValue || 0)}
+              secondary={`${formatMoney(deals.wonValue || 0)} secured revenue`}
+              color="#10b981"
+              bg="rgba(16, 185, 129, 0.12)"
+              badge="Revenue"
+              badgeType="success"
+            />
+
+            <MetricCard
+              icon="task_alt"
+              label="Active Projects"
+              value={projects.activeProjects ?? 0}
+              secondary={`${projects.total || 0} total / ${formatMoney(projects.totalBudget || 0)}`}
+              color="#ec4899"
+              bg="rgba(236, 72, 153, 0.12)"
+              badge="Delivery"
+              badgeType="warning"
+            />
+
+            <MetricCard
+              icon="checklist"
+              label="Pending Tasks"
+              value={(tasks.pending || 0) + (tasks.inProgress || 0)}
+              secondary={`${tasks.completed || 0} completed / ${tasks.total || 0} total`}
+              color="#f59e0b"
+              bg="rgba(245, 158, 11, 0.12)"
+              badge="Workload"
+              badgeType="warning"
+            />
+
+            {tasks.overdue > 0 && (
+              <MetricCard
+                icon="warning"
+                label="Overdue Tasks"
+                value={tasks.overdue}
+                secondary="Requires urgent review"
+                color="#ef4444"
+                bg="rgba(239, 68, 68, 0.12)"
+                badge="Action Needed"
+                badgeType="danger"
+              />
+            )}
+          </div>
+
+          {/* Section 1: Leads & Sales Pipeline Analytics */}
+          <div>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: '800', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--brand-primary)' }}>
+                trending_up
+              </span>
+              Sales &amp; Pipeline Analytics
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <LeadAnalytics leads={leads} />
+              <DealAnalytics deals={deals} />
+            </div>
+          </div>
+
+          {/* Section 2: Projects & Workload Analytics */}
+          <div>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: '800', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--brand-primary)' }}>
+                bar_chart
+              </span>
+              Delivery &amp; Workload Analytics
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <ProjectAnalytics projects={projects} />
+              <TaskAnalytics tasks={tasks} />
+            </div>
+          </div>
+
+          {/* Section 3: Recent Activity & Action Hub */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
+            {/* Live Activity Stream */}
+            <div className="glass-card" style={{ padding: '22px', borderRadius: 'var(--radius-lg)' }}>
+              <ActivityTimeline limit={8} />
+            </div>
+
+            {/* Quick Actions & Navigation Hub */}
+            <div className="glass-card" style={{ padding: '22px', borderRadius: 'var(--radius-lg)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--brand-primary)' }}>
+                  apps
+                </span>
+                Quick Access Hub
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <Link to="/leads" style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      padding: '14px',
+                      background: 'var(--bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: '#06b6d4', fontSize: '20px' }}>leaderboard</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-primary)' }}>Leads</span>
+                  </div>
+                </Link>
+
+                <Link to="/deals" style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      padding: '14px',
+                      background: 'var(--bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: '#6366f1', fontSize: '20px' }}>monetization_on</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-primary)' }}>Deals</span>
+                  </div>
+                </Link>
+
+                <Link to="/projects" style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      padding: '14px',
+                      background: 'var(--bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: '#ec4899', fontSize: '20px' }}>task_alt</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-primary)' }}>Projects</span>
+                  </div>
+                </Link>
+
+                <Link to="/tasks" style={{ textDecoration: 'none' }}>
+                  <div
+                    style={{
+                      padding: '14px',
+                      background: 'var(--bg-tertiary)',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-color)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: '#f59e0b', fontSize: '20px' }}>checklist</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-primary)' }}>Tasks</span>
+                  </div>
+                </Link>
+
+                <RoleGuard allowedRoles={['admin', 'manager']}>
+                  <Link to="/users" style={{ textDecoration: 'none', gridColumn: 'span 2' }}>
+                    <div
+                      style={{
+                        padding: '14px',
+                        background: 'var(--bg-tertiary)',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid var(--border-color)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ color: 'var(--brand-primary)', fontSize: '20px' }}>group</span>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-primary)' }}>User Management</span>
+                      <span className="badge badge-info" style={{ marginLeft: 'auto', fontSize: '0.7rem' }}>Admin / Manager</span>
+                    </div>
+                  </Link>
+                </RoleGuard>
+              </div>
+
+              {/* System summary */}
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  marginTop: 'auto',
+                  padding: '12px 14px',
+                  background: 'var(--bg-tertiary)',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: item.bg,
-                  color: item.color,
+                  fontSize: '0.78rem',
+                  color: 'var(--text-secondary)',
                   display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                  {item.icon}
+                <span>Role Scoping:</span>
+                <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                  {user?.role === 'employee' ? 'Assigned Records Only' : 'Organization Wide'}
                 </span>
               </div>
-              <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.label}</div>
-                <div style={{ fontWeight: '600', fontSize: '1rem', color: item.color }}>{item.value}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{item.sub}</div>
-              </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Quick Actions — role-aware */}
-      <h2 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '16px' }}>
-        Quick Actions
-      </h2>
-      <div className="grid-3" style={{ marginBottom: '32px' }}>
-        {/* User management — admin + manager */}
-        <RoleGuard allowedRoles={['admin', 'manager']}>
-          <Link
-            to="/users"
-            style={{ textDecoration: 'none' }}
-            id="quick-action-users"
-          >
-            <div
-              className="glass-card"
-              style={{
-                padding: '20px',
-                cursor: 'pointer',
-                transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '';
-              }}
-            >
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(99,102,241,0.12)',
-                  color: 'var(--accent-primary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '12px',
-                }}
-              >
-                <span className="material-symbols-outlined">group</span>
-              </div>
-              <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-                User Management
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                View, manage roles &amp; activate/deactivate users
-              </div>
-            </div>
-          </Link>
-        </RoleGuard>
-
-        {/* CRM Leads — active for all authenticated users */}
-        <Link
-          to="/leads"
-          style={{ textDecoration: 'none' }}
-          id="quick-action-leads"
-        >
-          <div
-            className="glass-card"
-            style={{
-              padding: '20px',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '';
-            }}
-          >
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(16, 185, 129, 0.12)',
-                color: 'var(--status-success)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '12px',
-              }}
-            >
-              <span className="material-symbols-outlined">leaderboard</span>
-            </div>
-            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-              Lead Management
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Track sales pipeline, qualify, and manage leads
-            </div>
-            <span className="badge badge-success">
-              Phase 5 Live
-            </span>
           </div>
-        </Link>
-
-        {/* CRM Deals & Sales Pipeline — active for all authenticated users */}
-        <Link
-          to="/deals"
-          style={{ textDecoration: 'none' }}
-          id="quick-action-deals"
-        >
-          <div
-            className="glass-card"
-            style={{
-              padding: '20px',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '';
-            }}
-          >
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(99, 102, 241, 0.12)',
-                color: 'var(--accent-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '12px',
-              }}
-            >
-              <span className="material-symbols-outlined">monetization_on</span>
-            </div>
-            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-              Deals &amp; Pipeline
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Sales pipeline stages, deal probabilities, and revenue forecasts
-            </div>
-            <span className="badge badge-success">
-              Phase 6 Live
-            </span>
-          </div>
-        </Link>
-
-        {/* Projects & Project Management — active for all authenticated users */}
-        <Link
-          to="/projects"
-          style={{ textDecoration: 'none' }}
-          id="quick-action-projects"
-        >
-          <div
-            className="glass-card"
-            style={{
-              padding: '20px',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '';
-            }}
-          >
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(6, 182, 212, 0.12)',
-                color: '#06b6d4',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '12px',
-              }}
-            >
-              <span className="material-symbols-outlined">task_alt</span>
-            </div>
-            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-              Projects &amp; Management
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Project portfolio, status tracking, and budget management
-            </div>
-            <span className="badge badge-success">
-              Phase 7 Live
-            </span>
-          </div>
-        </Link>
-
-        {/* Tasks & Activities — active for all authenticated users */}
-        <Link
-          to="/tasks"
-          style={{ textDecoration: 'none' }}
-          id="quick-action-tasks"
-        >
-          <div
-            className="glass-card"
-            style={{
-              padding: '20px',
-              cursor: 'pointer',
-              transition: 'transform var(--transition-fast), box-shadow var(--transition-fast)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '';
-            }}
-          >
-            <div
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(245, 158, 11, 0.12)',
-                color: '#f59e0b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '12px',
-              }}
-            >
-              <span className="material-symbols-outlined">checklist</span>
-            </div>
-            <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px' }}>
-              Tasks &amp; Activities
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Kanban task boards, deliverables, notes, and activity timeline
-            </div>
-            <span className="badge badge-success">
-              Phase 8 Live
-            </span>
-          </div>
-        </Link>
-      </div>
+        </>
+      )}
     </div>
   );
 };

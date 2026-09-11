@@ -8,6 +8,7 @@ import projectsReducer from '../features/projects/projectsSlice';
 import tasksReducer from '../features/tasks/tasksSlice';
 import notesReducer from '../features/notes/notesSlice';
 import activitiesReducer from '../features/activities/activitiesSlice';
+import dashboardReducer from '../features/dashboard/dashboardSlice';
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   tasks: tasksReducer,
   notes: notesReducer,
   activities: activitiesReducer,
+  dashboard: dashboardReducer,
 });
 
 export default rootReducer;

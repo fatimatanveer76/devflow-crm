@@ -8,6 +8,7 @@ import projectRoutes from './project.routes.js';
 import taskRoutes from './task.routes.js';
 import noteRoutes from './note.routes.js';
 import activityRoutes from './activity.routes.js';
+import dashboardRoutes from './dashboard.routes.js';
 
 const router = Router();
 
@@ -16,6 +17,9 @@ router.use('/health', healthRoutes);
 
 // /api/v1/auth
 router.use('/auth', authRoutes);
+
+// /api/v1/dashboard — requires authentication
+router.use('/dashboard', dashboardRoutes);
 
 // /api/v1/users — requires authentication + RBAC permission
 router.use('/users', userRoutes);

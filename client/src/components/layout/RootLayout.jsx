@@ -181,6 +181,7 @@ export const RootLayout = () => {
               'Phase 6: Deals & Pipeline',
               'Phase 7: Projects',
               'Phase 8: Tasks & Activities',
+              'Phase 9: Dashboard & Analytics',
             ].map((label) => (
               <div
                 key={label}
@@ -212,7 +213,7 @@ export const RootLayout = () => {
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>lock</span>
-              <span>Phases 9–14: Standby</span>
+              <span>Phases 10–14: Standby</span>
             </div>
           </div>
         </nav>
@@ -229,7 +230,7 @@ export const RootLayout = () => {
             justifyContent: 'space-between',
           }}
         >
-          <span>v1.0.0 (Phase 8)</span>
+          <span>v1.0.0 (Phase 9)</span>
           <span className="badge badge-info">Dev Mode</span>
         </div>
       </aside>
