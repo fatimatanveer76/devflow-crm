@@ -1,12 +1,12 @@
-﻿import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import { uuidPrimaryKey, createModelOptions } from './baseModel.js';
 
 export const ACTIVITY_TYPES = Object.freeze([
-  'lead_created','lead_updated','lead_status_changed',
-  'deal_created','deal_updated','deal_stage_changed','deal_status_changed',
-  'project_created','project_updated','project_status_changed',
-  'task_created','task_updated','task_status_changed','task_completed',
-  'note_added','note_updated',
+  'lead_created', 'lead_updated', 'lead_status_changed', 'lead_assigned',
+  'deal_created', 'deal_updated', 'deal_stage_changed', 'deal_status_changed', 'deal_assigned',
+  'project_created', 'project_updated', 'project_status_changed', 'project_assigned',
+  'task_created', 'task_updated', 'task_status_changed', 'task_completed', 'task_assigned',
+  'note_added', 'note_updated',
 ]);
 
 export class Activity extends Model {}

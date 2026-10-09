@@ -34,6 +34,22 @@ export const listNotes = async (req, res, next) => {
 };
 
 /**
+ * GET /api/v1/notes/:id
+ * Retrieve a single note by ID
+ */
+export const getNoteById = async (req, res, next) => {
+  try {
+    const note = await NoteService.getNoteById(req.params.id, req.user);
+    return res.status(200).json({
+      success: true,
+      data: { note },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * PATCH /api/v1/notes/:id
  * Update note content
  */

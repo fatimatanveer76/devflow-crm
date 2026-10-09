@@ -102,13 +102,19 @@ export class TaskService {
       }
     }
 
-    // Verify entity references if supplied
+    // Verify entity references and access if supplied
     if (data.lead_id) {
       const lead = await Lead.findByPk(data.lead_id);
       if (!lead) {
         const err = new Error('The related lead does not exist.');
         err.statusCode = 400;
         err.code = 'INVALID_LEAD';
+        throw err;
+      }
+      if (user.role === ROLES.EMPLOYEE && lead.assigned_user_id !== user.id) {
+        const err = new Error('You can only attach tasks to leads assigned to you.');
+        err.statusCode = 403;
+        err.code = 'FORBIDDEN';
         throw err;
       }
     }
@@ -121,6 +127,12 @@ export class TaskService {
         err.code = 'INVALID_DEAL';
         throw err;
       }
+      if (user.role === ROLES.EMPLOYEE && deal.assigned_user_id !== user.id) {
+        const err = new Error('You can only attach tasks to deals assigned to you.');
+        err.statusCode = 403;
+        err.code = 'FORBIDDEN';
+        throw err;
+      }
     }
 
     if (data.project_id) {
@@ -129,6 +141,12 @@ export class TaskService {
         const err = new Error('The related project does not exist.');
         err.statusCode = 400;
         err.code = 'INVALID_PROJECT';
+        throw err;
+      }
+      if (user.role === ROLES.EMPLOYEE && project.assigned_user_id !== user.id) {
+        const err = new Error('You can only attach tasks to projects assigned to you.');
+        err.statusCode = 403;
+        err.code = 'FORBIDDEN';
         throw err;
       }
     }
@@ -444,7 +462,7 @@ export class TaskService {
     await task.save();
 
     await ActivityService.log({
-      type: 'task_updated',
+      type: 'task_assigned',
       description: `Task "${task.title}" reassigned by ${user.name || user.email}.`,
       user_id: user.id,
       task_id: task.id,

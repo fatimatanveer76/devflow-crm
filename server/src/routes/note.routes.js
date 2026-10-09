@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   createNote,
   listNotes,
+  getNoteById,
   updateNote,
   deleteNote,
 } from '../controllers/note.controller.js';
@@ -30,6 +31,13 @@ router.post('/', requirePermission('canCreateNote'), validateCreateNote, createN
  * Access: canListNotes
  */
 router.get('/', requirePermission('canListNotes'), listNotes);
+
+/**
+ * GET /api/v1/notes/:id
+ * Retrieve single note
+ * Access: canViewNote
+ */
+router.get('/:id', requirePermission('canViewNote'), getNoteById);
 
 /**
  * PATCH /api/v1/notes/:id

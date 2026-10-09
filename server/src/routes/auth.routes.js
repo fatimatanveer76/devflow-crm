@@ -11,12 +11,13 @@ import {
   validateRegister,
   validateLogin,
 } from '../middleware/validate.middleware.js';
+import { authRateLimiter } from '../middleware/rateLimiter.middleware.js';
 
 const router = Router();
 
-// Public auth endpoints
-router.post('/register', validateRegister, register);
-router.post('/login', validateLogin, login);
+// Public auth endpoints protected by rate limiting
+router.post('/register', authRateLimiter, validateRegister, register);
+router.post('/login', authRateLimiter, validateLogin, login);
 router.post('/refresh', refresh);
 router.post('/logout', logout);
 

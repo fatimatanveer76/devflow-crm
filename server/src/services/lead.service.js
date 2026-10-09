@@ -7,6 +7,7 @@ import {
   isValidLeadSource,
 } from '../config/leads.js';
 import { isValidUUID } from '../middleware/leadValidate.middleware.js';
+import { ActivityService } from './activity.service.js';
 
 const SAFE_USER_ATTRIBUTES = ['id', 'name', 'email', 'role', 'is_active'];
 
@@ -108,6 +109,14 @@ export class LeadService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'lead_created',
+      description: `Lead "${lead.name}" was created by ${user.name || user.email}.`,
+      user_id: user.id,
+      lead_id: lead.id,
+      metadata: { status: lead.status, priority: lead.priority, source: lead.source },
     });
 
     return lead.toJSON();
@@ -264,6 +273,14 @@ export class LeadService {
       ],
     });
 
+    await ActivityService.log({
+      type: 'lead_updated',
+      description: `Lead "${lead.name}" was updated by ${user.name || user.email}.`,
+      user_id: user.id,
+      lead_id: lead.id,
+      metadata: { updated_fields: Object.keys(fieldsToUpdate) },
+    });
+
     return lead.toJSON();
   }
 
@@ -283,6 +300,7 @@ export class LeadService {
     }
 
     const lead = await LeadService.findLeadOrFail(id, user);
+    const previousStatus = lead.status;
     await lead.update({ status });
 
     await lead.reload({
@@ -298,6 +316,14 @@ export class LeadService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'lead_status_changed',
+      description: `Lead "${lead.name}" status changed from "${previousStatus}" to "${status}" by ${user.name || user.email}.`,
+      user_id: user.id,
+      lead_id: lead.id,
+      metadata: { previousStatus, newStatus: status },
     });
 
     return lead.toJSON();
@@ -346,6 +372,14 @@ export class LeadService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'lead_assigned',
+      description: `Lead "${lead.name}" was ${targetUserId ? 'reassigned' : 'unassigned'} by ${user.name || user.email}.`,
+      user_id: user.id,
+      lead_id: lead.id,
+      metadata: { assigned_user_id: targetUserId },
     });
 
     return lead.toJSON();

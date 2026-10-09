@@ -54,4 +54,8 @@ export const config = {
   bcrypt: {
     saltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS, 10) || 12,
   },
+  rateLimit: {
+    authWindowMs: parseInt(process.env.RATE_LIMIT_AUTH_WINDOW_MS, 10) || 15 * 60 * 1000,
+    authMax: parseInt(process.env.RATE_LIMIT_AUTH_MAX, 10) || 10,
+  },
 };

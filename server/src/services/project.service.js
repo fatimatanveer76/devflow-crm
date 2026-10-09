@@ -7,6 +7,7 @@ import {
   isValidProjectPriority,
 } from '../config/projects.js';
 import { isValidUUID } from '../middleware/leadValidate.middleware.js';
+import { ActivityService } from './activity.service.js';
 
 const SAFE_USER_ATTRIBUTES = ['id', 'name', 'email', 'role', 'is_active'];
 const SAFE_DEAL_ATTRIBUTES = ['id', 'title', 'value', 'currency', 'stage', 'status'];
@@ -172,6 +173,16 @@ export class ProjectService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'project_created',
+      description: `Project "${project.name}" was created by ${user.name || user.email}.`,
+      user_id: user.id,
+      project_id: project.id,
+      deal_id: project.deal_id,
+      lead_id: project.lead_id,
+      metadata: { status: project.status, priority: project.priority, budget: project.budget },
     });
 
     return project.toJSON();
@@ -411,6 +422,16 @@ export class ProjectService {
       ],
     });
 
+    await ActivityService.log({
+      type: 'project_updated',
+      description: `Project "${project.name}" was updated by ${user.name || user.email}.`,
+      user_id: user.id,
+      project_id: project.id,
+      deal_id: project.deal_id,
+      lead_id: project.lead_id,
+      metadata: { updated_fields: Object.keys(fieldsToUpdate) },
+    });
+
     return project.toJSON();
   }
 
@@ -455,6 +476,16 @@ export class ProjectService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'project_status_changed',
+      description: `Project "${project.name}" status changed to "${status}" by ${user.name || user.email}.`,
+      user_id: user.id,
+      project_id: project.id,
+      deal_id: project.deal_id,
+      lead_id: project.lead_id,
+      metadata: { status },
     });
 
     return project.toJSON();
@@ -513,6 +544,16 @@ export class ProjectService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'project_assigned',
+      description: `Project "${project.name}" was ${targetUserId ? 'reassigned' : 'unassigned'} by ${user.name || user.email}.`,
+      user_id: user.id,
+      project_id: project.id,
+      deal_id: project.deal_id,
+      lead_id: project.lead_id,
+      metadata: { assigned_user_id: targetUserId },
     });
 
     return project.toJSON();

@@ -10,6 +10,7 @@ import {
   isValidDealStatus,
 } from '../config/deals.js';
 import { isValidUUID } from '../middleware/leadValidate.middleware.js';
+import { ActivityService } from './activity.service.js';
 
 const SAFE_USER_ATTRIBUTES = ['id', 'name', 'email', 'role', 'is_active'];
 const SAFE_LEAD_ATTRIBUTES = ['id', 'name', 'company', 'email', 'phone', 'status', 'priority'];
@@ -148,6 +149,15 @@ export class DealService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'deal_created',
+      description: `Deal "${deal.title}" was created by ${user.name || user.email}.`,
+      user_id: user.id,
+      deal_id: deal.id,
+      lead_id: deal.lead_id,
+      metadata: { value: deal.value, currency: deal.currency, stage: deal.stage, status: deal.status },
     });
 
     return deal.toJSON();
@@ -388,6 +398,15 @@ export class DealService {
       ],
     });
 
+    await ActivityService.log({
+      type: 'deal_updated',
+      description: `Deal "${deal.title}" was updated by ${user.name || user.email}.`,
+      user_id: user.id,
+      deal_id: deal.id,
+      lead_id: deal.lead_id,
+      metadata: { updated_fields: Object.keys(fieldsToUpdate) },
+    });
+
     return deal.toJSON();
   }
 
@@ -441,6 +460,15 @@ export class DealService {
       ],
     });
 
+    await ActivityService.log({
+      type: 'deal_stage_changed',
+      description: `Deal "${deal.title}" stage changed to "${stage}" by ${user.name || user.email}.`,
+      user_id: user.id,
+      deal_id: deal.id,
+      lead_id: deal.lead_id,
+      metadata: { newStage: stage, probability: newProbability, status: newStatus },
+    });
+
     return deal.toJSON();
   }
 
@@ -490,6 +518,15 @@ export class DealService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'deal_status_changed',
+      description: `Deal "${deal.title}" status changed to "${status}" by ${user.name || user.email}.`,
+      user_id: user.id,
+      deal_id: deal.id,
+      lead_id: deal.lead_id,
+      metadata: { status },
     });
 
     return deal.toJSON();
@@ -543,6 +580,15 @@ export class DealService {
           attributes: ['id', 'name', 'email'],
         },
       ],
+    });
+
+    await ActivityService.log({
+      type: 'deal_assigned',
+      description: `Deal "${deal.title}" was ${targetUserId ? 'reassigned' : 'unassigned'} by ${user.name || user.email}.`,
+      user_id: user.id,
+      deal_id: deal.id,
+      lead_id: deal.lead_id,
+      metadata: { assigned_user_id: targetUserId },
     });
 
     return deal.toJSON();
