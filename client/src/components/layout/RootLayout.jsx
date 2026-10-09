@@ -146,6 +146,17 @@ export const RootLayout = () => {
             </NavLink>
           )}
 
+          {/* Requirement Vault — all authenticated users */}
+          {isAuthenticated && (
+            <NavLink
+              to="/requirements"
+              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            >
+              <span className="material-symbols-outlined">inventory_2</span>
+              <span>Requirement Vault</span>
+            </NavLink>
+          )}
+
           {/* User management — admin and manager only */}
           {isAuthenticated && (currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
             <NavLink

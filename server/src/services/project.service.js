@@ -147,6 +147,7 @@ export class ProjectService {
       lead_id: leadId,
       assigned_user_id: assignedUserId,
       created_by_id: user.id,
+      client_id: data.client_id || null,
       notes: data.notes ? data.notes.trim() : null,
     });
 
@@ -392,6 +393,15 @@ export class ProjectService {
           throw err;
         }
         fieldsToUpdate.assigned_user_id = updateData.assigned_user_id;
+      }
+    }
+
+    // Client assignment (Admin & Manager only)
+    if (user.role !== ROLES.EMPLOYEE && updateData.client_id !== undefined) {
+      if (updateData.client_id === null || updateData.client_id === '') {
+        fieldsToUpdate.client_id = null;
+      } else if (isValidUUID(updateData.client_id)) {
+        fieldsToUpdate.client_id = updateData.client_id;
       }
     }
 

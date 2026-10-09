@@ -9,6 +9,8 @@ import tasksReducer from '../features/tasks/tasksSlice';
 import notesReducer from '../features/notes/notesSlice';
 import activitiesReducer from '../features/activities/activitiesSlice';
 import dashboardReducer from '../features/dashboard/dashboardSlice';
+import requirementsReducer from '../features/requirements/requirementsSlice';
+import portalReducer from '../features/portal/portalSlice';
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -21,6 +23,8 @@ const rootReducer = combineReducers({
   notes: notesReducer,
   activities: activitiesReducer,
   dashboard: dashboardReducer,
+  requirements: requirementsReducer,
+  portal: portalReducer,
 });
 
 export default rootReducer;

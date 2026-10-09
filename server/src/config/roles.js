@@ -13,6 +13,7 @@ export const ROLES = Object.freeze({
   ADMIN: 'admin',
   MANAGER: 'manager',
   EMPLOYEE: 'employee',
+  CLIENT: 'client',
 });
 
 /**
@@ -28,6 +29,7 @@ const ROLE_HIERARCHY = Object.freeze({
   [ROLES.ADMIN]: 100,
   [ROLES.MANAGER]: 50,
   [ROLES.EMPLOYEE]: 10,
+  [ROLES.CLIENT]: 5,
 });
 
 /**
@@ -104,6 +106,14 @@ export const PERMISSIONS = Object.freeze({
     canDeleteNote: true,
     // Activity management
     canListActivities: true,
+    // Requirement Vault
+    canListRequirements: true,
+    canViewRequirement: true,
+    canCreateRequirement: true,
+    canUpdateRequirement: true,
+    canDeleteRequirement: true,
+    canApproveRequirement: true,
+    canPublishRequirement: true,
   }),
   [ROLES.MANAGER]: Object.freeze({
     // Dashboard & Analytics
@@ -155,6 +165,14 @@ export const PERMISSIONS = Object.freeze({
     canDeleteNote: true,
     // Activity management
     canListActivities: true,
+    // Requirement Vault
+    canListRequirements: true,
+    canViewRequirement: true,
+    canCreateRequirement: true,
+    canUpdateRequirement: true,
+    canDeleteRequirement: false, // only admin can delete requirements
+    canApproveRequirement: true,
+    canPublishRequirement: true,
   }),
   [ROLES.EMPLOYEE]: Object.freeze({
     // Dashboard & Analytics
@@ -206,6 +224,70 @@ export const PERMISSIONS = Object.freeze({
     canDeleteNote: false,
     // Activity management
     canListActivities: true,
+    // Requirement Vault
+    canListRequirements: true,
+    canViewRequirement: true,
+    canCreateRequirement: true,
+    canUpdateRequirement: true,
+    canDeleteRequirement: false,
+    canApproveRequirement: false, // employees cannot approve
+    canPublishRequirement: false, // employees cannot publish
+  }),
+  [ROLES.CLIENT]: Object.freeze({
+    // Client Portal
+    canAccessPortal: true,
+    canViewPortalDashboard: true,
+    canViewPortalProjects: true,
+    canViewPortalRequirements: true,
+    // Internal CRM modules - strictly forbidden for clients
+    canViewDashboard: false,
+    canListUsers: false,
+    canViewUser: false,
+    canChangeRole: false,
+    canChangeStatus: false,
+    canDeleteUser: false,
+    canListLeads: false,
+    canViewLead: false,
+    canCreateLead: false,
+    canUpdateLead: false,
+    canDeleteLead: false,
+    canAssignLead: false,
+    canUpdateLeadStatus: false,
+    canListDeals: false,
+    canViewDeal: false,
+    canCreateDeal: false,
+    canUpdateDeal: false,
+    canDeleteDeal: false,
+    canAssignDeal: false,
+    canUpdateDealStage: false,
+    canUpdateDealStatus: false,
+    canListProjects: false,
+    canViewProject: false,
+    canCreateProject: false,
+    canUpdateProject: false,
+    canDeleteProject: false,
+    canAssignProject: false,
+    canUpdateProjectStatus: false,
+    canListTasks: false,
+    canViewTask: false,
+    canCreateTask: false,
+    canUpdateTask: false,
+    canDeleteTask: false,
+    canAssignTask: false,
+    canUpdateTaskStatus: false,
+    canListNotes: false,
+    canViewNote: false,
+    canCreateNote: false,
+    canUpdateNote: false,
+    canDeleteNote: false,
+    canListActivities: false,
+    canListRequirements: false,
+    canViewRequirement: false,
+    canCreateRequirement: false,
+    canUpdateRequirement: false,
+    canDeleteRequirement: false,
+    canApproveRequirement: false,
+    canPublishRequirement: false,
   }),
 });
 
@@ -216,6 +298,10 @@ export const PERMISSIONS = Object.freeze({
  * @returns {Object}
  */
 export const getPermissions = (role) => PERMISSIONS[role] ?? {
+  canAccessPortal: false,
+  canViewPortalDashboard: false,
+  canViewPortalProjects: false,
+  canViewPortalRequirements: false,
   canViewDashboard: false,
   canListUsers: false,
   canViewUser: false,
@@ -257,4 +343,11 @@ export const getPermissions = (role) => PERMISSIONS[role] ?? {
   canUpdateNote: false,
   canDeleteNote: false,
   canListActivities: false,
+  canListRequirements: false,
+  canViewRequirement: false,
+  canCreateRequirement: false,
+  canUpdateRequirement: false,
+  canDeleteRequirement: false,
+  canApproveRequirement: false,
+  canPublishRequirement: false,
 };

@@ -93,7 +93,7 @@ export class UserService {
    */
   static async updateUserRole(targetId, newRole, requesterId) {
     if (!isValidRole(newRole)) {
-      const err = new Error(`Invalid role. Allowed roles: admin, manager, employee.`);
+      const err = new Error(`Invalid role. Allowed roles: ${ALL_ROLES.join(', ')}.`);
       err.statusCode = 400;
       err.code = 'INVALID_ROLE';
       throw err;

@@ -7,6 +7,8 @@ export const ACTIVITY_TYPES = Object.freeze([
   'project_created', 'project_updated', 'project_status_changed', 'project_assigned',
   'task_created', 'task_updated', 'task_status_changed', 'task_completed', 'task_assigned',
   'note_added', 'note_updated',
+  'requirement_created', 'requirement_updated', 'requirement_version_created',
+  'requirement_status_changed', 'requirement_approved', 'requirement_rejected', 'requirement_published',
 ]);
 
 export class Activity extends Model {}

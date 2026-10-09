@@ -9,6 +9,8 @@ import taskRoutes from './task.routes.js';
 import noteRoutes from './note.routes.js';
 import activityRoutes from './activity.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
+import requirementRoutes from './requirement.routes.js';
+import portalRoutes from './portal.routes.js';
 
 const router = Router();
 
@@ -41,5 +43,11 @@ router.use('/notes', noteRoutes);
 
 // /api/v1/activities — requires authentication + RBAC permission
 router.use('/activities', activityRoutes);
+
+// /api/v1/requirements — requires authentication + RBAC permission
+router.use('/requirements', requirementRoutes);
+
+// /api/v1/portal — requires authentication + CLIENT role
+router.use('/portal', portalRoutes);
 
 export default router;

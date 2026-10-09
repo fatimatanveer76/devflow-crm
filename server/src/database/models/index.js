@@ -8,6 +8,9 @@ import { initProject, Project } from './project.model.js';
 import { initTask, Task } from './task.model.js';
 import { initNote, Note } from './note.model.js';
 import { initActivity, Activity } from './activity.model.js';
+import { initRequirement, Requirement } from './requirement.model.js';
+import { initRequirementVersion, RequirementVersion } from './requirementVersion.model.js';
+import { initClientProfile, ClientProfile } from './clientProfile.model.js';
 
 // Initialize all models
 initUser(sequelize);
@@ -18,6 +21,9 @@ initProject(sequelize);
 initTask(sequelize);
 initNote(sequelize);
 initActivity(sequelize);
+initRequirement(sequelize);
+initRequirementVersion(sequelize);
+initClientProfile(sequelize);
 
 // User & Token associations
 User.hasMany(RefreshToken, {
@@ -27,6 +33,18 @@ User.hasMany(RefreshToken, {
 });
 
 RefreshToken.belongsTo(User, {
+  foreignKey: 'user_id',
+  as: 'user',
+});
+
+// User & ClientProfile associations
+User.hasOne(ClientProfile, {
+  foreignKey: 'user_id',
+  as: 'clientProfile',
+  onDelete: 'CASCADE',
+});
+
+ClientProfile.belongsTo(User, {
   foreignKey: 'user_id',
   as: 'user',
 });
@@ -131,6 +149,17 @@ Project.belongsTo(User, {
 User.hasMany(Project, {
   foreignKey: 'created_by_id',
   as: 'createdProjects',
+});
+
+Project.belongsTo(User, {
+  foreignKey: 'client_id',
+  as: 'client',
+  onDelete: 'SET NULL',
+});
+
+User.hasMany(Project, {
+  foreignKey: 'client_id',
+  as: 'clientProjects',
 });
 
 // Task associations
@@ -301,6 +330,64 @@ Task.hasMany(Activity, {
   as: 'activities',
 });
 
+// Requirement associations
+Requirement.belongsTo(Project, {
+  foreignKey: 'project_id',
+  as: 'project',
+  onDelete: 'SET NULL',
+});
+
+Project.hasMany(Requirement, {
+  foreignKey: 'project_id',
+  as: 'requirements',
+});
+
+Requirement.belongsTo(Deal, {
+  foreignKey: 'deal_id',
+  as: 'deal',
+  onDelete: 'SET NULL',
+});
+
+Deal.hasMany(Requirement, {
+  foreignKey: 'deal_id',
+  as: 'requirements',
+});
+
+Requirement.belongsTo(User, {
+  foreignKey: 'created_by_id',
+  as: 'creator',
+  onDelete: 'SET NULL',
+});
+
+User.hasMany(Requirement, {
+  foreignKey: 'created_by_id',
+  as: 'createdRequirements',
+});
+
+Requirement.belongsTo(User, {
+  foreignKey: 'approved_by_id',
+  as: 'approver',
+  onDelete: 'SET NULL',
+});
+
+// RequirementVersion associations
+RequirementVersion.belongsTo(Requirement, {
+  foreignKey: 'requirement_id',
+  as: 'requirement',
+  onDelete: 'CASCADE',
+});
+
+Requirement.hasMany(RequirementVersion, {
+  foreignKey: 'requirement_id',
+  as: 'versions',
+});
+
+RequirementVersion.belongsTo(User, {
+  foreignKey: 'created_by_id',
+  as: 'author',
+  onDelete: 'SET NULL',
+});
+
 const models = {
   User,
   RefreshToken,
@@ -310,6 +397,9 @@ const models = {
   Task,
   Note,
   Activity,
+  Requirement,
+  RequirementVersion,
+  ClientProfile,
 };
 
 const db = {
@@ -327,6 +417,9 @@ const db = {
   Task,
   Note,
   Activity,
+  Requirement,
+  RequirementVersion,
+  ClientProfile,
 };
 
 export {
@@ -344,6 +437,9 @@ export {
   Task,
   Note,
   Activity,
+  Requirement,
+  RequirementVersion,
+  ClientProfile,
 };
 
 export default db;

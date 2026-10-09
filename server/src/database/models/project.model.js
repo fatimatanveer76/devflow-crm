@@ -96,6 +96,10 @@ export const initProject = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: true,
       },
+      client_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
       notes: {
         type: DataTypes.TEXT,
         allowNull: true,

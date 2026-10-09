@@ -12,6 +12,7 @@ import LeadsPage from '../pages/LeadsPage';
 import DealsPage from '../pages/DealsPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import TasksPage from '../pages/TasksPage';
+import RequirementsPage from '../pages/RequirementsPage';
 import NotFoundPage from '../pages/NotFoundPage';
 
 export const AppRoutes = () => {
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
           <Route path="deals" element={<DealsPage />} />
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="tasks" element={<TasksPage />} />
+          <Route path="requirements" element={<RequirementsPage />} />
 
           {/* User management — admin and manager can view; admin can mutate */}
           <Route

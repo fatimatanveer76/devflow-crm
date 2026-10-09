@@ -91,6 +91,12 @@ export const validateCreateProject = (req, res, next) => {
     }
   }
 
+  if (req.body?.client_id !== undefined && req.body?.client_id !== null && req.body?.client_id !== '') {
+    if (!isValidUUID(req.body.client_id)) {
+      errors.push({ field: 'client_id', message: 'Client ID must be a valid UUID.' });
+    }
+  }
+
   if (errors.length > 0) {
     return res.status(400).json({
       success: false,
@@ -185,6 +191,12 @@ export const validateUpdateProject = (req, res, next) => {
   if (assigned_user_id !== undefined && assigned_user_id !== null && assigned_user_id !== '') {
     if (!isValidUUID(assigned_user_id)) {
       errors.push({ field: 'assigned_user_id', message: 'Assigned user ID must be a valid UUID.' });
+    }
+  }
+
+  if (req.body?.client_id !== undefined && req.body?.client_id !== null && req.body?.client_id !== '') {
+    if (!isValidUUID(req.body.client_id)) {
+      errors.push({ field: 'client_id', message: 'Client ID must be a valid UUID.' });
     }
   }
 
